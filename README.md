@@ -31,7 +31,7 @@ Open the webapp on the HUBIoT. A panel should exist under the OUTIoTs tab. Figur
 - Solid *OFF*
   - Outlet is *not* powered.
 - Blinking (On/Off Consistently for 10 seconds)
-  - A user has selected the indentify button for the module within the WebApp.
+  - The module is in Identification mode. A user has selected the indentify button for the module within the WebApp.
 - Double Blink
   - The module is in WiFi Setup Mode.
 
