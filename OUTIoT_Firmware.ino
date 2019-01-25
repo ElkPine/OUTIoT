@@ -10,10 +10,6 @@
 #define APPSK  "adminIoT"
 #endif
 
-IPAddress local_IP(192,168,1,1);
-IPAddress gateway(192,168,1,254);
-IPAddress subnet(255,255,255,0);
-
 /* Bootup credentials. */
 const char *ssid = APSSID;
 const char *password = APPSK;
@@ -23,13 +19,45 @@ ESP8266WebServer server(80);
 void setup() {
   Serial.begin(115200);
   updatePasscodeAndSSID();
+  startHTTPServer();
 }
 
 void loop() {
   server.handleClient();
 }
 
+void startHTTPServer(){
+  server.on("/validate", handleRequest);
+  server.begin();
+  Serial.println("HTTP Server Started and Listening");
+}
+
+void handleRequest(){
+  if (server.hasArg("plain")== false){
+    server.send(200, "text/plain", "Body not received");
+    return;
+  }
+
+  String message = "Body received:\n";
+  message += server.arg("plain");
+  message += "\n";
+
+  server.send(200, "text/plain", "CORRECT");
+  Serial.println(message);
+}
+
 void updatePasscodeAndSSID(){
-    WiFiManager wifiManager;
-    wifiManager.autoConnect("OUTIoT_WiFi_Setup", "masterpassword"); //TODO Test to make sure multiple modules don't interfere with eachother.
+  WiFiManager wifiManager;
+  wifiManager.setAPCallback(configModeCallback);
+  wifiManager.autoConnect("OUTIoT_WiFi_Setup", "masterpassword"); //TODO Test to make sure multiple modules don't interfere with eachother.
+  Serial.print("Local IP: ");
+  Serial.println(WiFi.localIP());
+}
+
+void configModeCallback (WiFiManager *myWiFiManager) {
+  Serial.println("Entered config mode");
+  Serial.println(WiFi.softAPIP());
+
+  Serial.println(myWiFiManager->getConfigPortalSSID());
+  // TODO: Blink LED in indication
 }
